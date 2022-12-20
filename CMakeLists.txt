@@ -119,11 +119,13 @@ cmake_dependent_option(ENABLE_ITT "Enable ITT for tracing" ON "UNIX AND NOT ${CM
 cmake_dependent_option(ENABLE_VAAPI "Parameter to enable VAAPI for image pre-processing" ON "UNIX" OFF)
 cmake_dependent_option(ENABLE_PAHO_INSTALLATION "Enables paho-mqtt3c installation" OFF "UNIX" OFF)
 cmake_dependent_option(ENABLE_RDKAFKA_INSTALLATION "Enables rdkafka installation" OFF "UNIX" OFF)
+cmake_dependent_option(ENABLE_PRAVEGA_INSTALLATION "Enables pravega installation" ON "UNIX" OFF)
 option(ENABLE_AUDIO_INFERENCE_ELEMENTS "Enables audio inference elements" ON)
 option(ENABLE_VPUX "Enables VPUX specific features" OFF)
 
 message("ENABLE_PAHO_INSTALLATION=${ENABLE_PAHO_INSTALLATION}")
 message("ENABLE_RDKAFKA_INSTALLATION=${ENABLE_RDKAFKA_INSTALLATION}")
+message("ENABLE_PRAVEGA_INSTALLATION=${ENABLE_PRAVEGA_INSTALLATION}")
 
 # Define compiler flags
 

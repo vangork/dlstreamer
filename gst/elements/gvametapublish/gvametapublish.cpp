@@ -25,6 +25,8 @@ const gchar *method_type_to_string(PublishMethodType method_type) {
         return PUBLISH_METHOD_MQTT_NAME;
     case GVA_META_PUBLISH_KAFKA:
         return PUBLISH_METHOD_KAFKA_NAME;
+    case GVA_META_PUBLISH_PRAVEGA:
+        return PUBLISH_METHOD_PRAVEGA_NAME;
     default:
         return UNKNOWN_VALUE_NAME;
     }
@@ -44,6 +46,10 @@ enum {
     PROP_MAX_CONNECT_ATTEMPTS,
     PROP_MAX_RECONNECT_INTERVAL,
     PROP_SIGNAL_HANDOFFS,
+    PROP_CONTROLLER_URI,
+    PROP_SCOPE,
+    PROP_STREAM,
+    PROP_ROUTING_KEY,
 };
 
 class GvaMetaPublishPrivate {
@@ -89,6 +95,18 @@ class GvaMetaPublishPrivate {
         case PROP_MAX_RECONNECT_INTERVAL:
             _max_reconnect_interval = g_value_get_uint(value);
             break;
+        case PROP_CONTROLLER_URI:
+            _controller_uri = g_value_get_string(value);
+            break;
+        case PROP_SCOPE:
+            _scope = g_value_get_string(value);
+            break;
+        case PROP_STREAM:
+            _stream = g_value_get_string(value);
+            break;
+        case PROP_ROUTING_KEY:
+            _routing_key = g_value_get_string(value);
+            break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(G_OBJECT(_base), prop_id, pspec);
             break;
@@ -121,6 +139,18 @@ class GvaMetaPublishPrivate {
         case PROP_MAX_RECONNECT_INTERVAL:
             g_value_set_uint(value, _max_reconnect_interval);
             break;
+        case PROP_CONTROLLER_URI:
+            g_value_set_string(value, _controller_uri.c_str());
+            break;
+        case PROP_SCOPE:
+            g_value_set_string(value, _scope.c_str());
+            break;
+        case PROP_STREAM:
+            g_value_set_string(value, _stream.c_str());
+            break;
+        case PROP_ROUTING_KEY:
+            g_value_set_string(value, _routing_key.c_str());
+            break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(G_OBJECT(_base), prop_id, pspec);
             break;
@@ -131,10 +161,12 @@ class GvaMetaPublishPrivate {
         GST_INFO_OBJECT(_base,
                         "%s parameters:\n -- Method: %s\n -- File path: %s\n -- File format: %s\n -- Address: %s\n "
                         "-- Mqtt client ID: %s\n -- Kafka topic: %s\n -- Max connect attempts: %d\n "
-                        "-- Max reconnect interval: %d\n -- Signal handoffs: %s\n",
+                        "-- Max reconnect interval: %d\n -- Signal handoffs: %s\n "
+                        "-- Pravega controller Uri: %s\n -- Scope: %s\n -- Stream:%s \n -- Routing key: %s\n",
                         GST_ELEMENT_NAME(GST_ELEMENT_CAST(_base)), method_type_to_string(_method), _file_path.c_str(),
                         file_format_to_string(_file_format), _address.c_str(), _mqtt_client_id.c_str(), _topic.c_str(),
-                        _max_connect_attempts, _max_reconnect_interval, _signal_handoffs ? "true" : "false");
+                        _max_connect_attempts, _max_reconnect_interval, _signal_handoffs ? "true" : "false",
+                        _controller_uri.c_str(), _scope.c_str(), _stream.c_str(), _routing_key.c_str());
 
         switch (_method) {
         case GVA_META_PUBLISH_FILE:
@@ -151,6 +183,11 @@ class GvaMetaPublishPrivate {
             if ((_metapublish = gst_element_factory_make("gvametapublishkafka", nullptr)))
                 g_object_set(_metapublish, "address", _address.c_str(), "topic", _topic.c_str(), "max-connect-attempts",
                              _max_connect_attempts, "max-reconnect-interval", _max_reconnect_interval, nullptr);
+            break;
+        case GVA_META_PUBLISH_PRAVEGA:
+            if ((_metapublish = gst_element_factory_make("gvametapublishpravega", nullptr)))
+                g_object_set(_metapublish, "controller-uri", _controller_uri.c_str(), "scope", _scope.c_str(), "stream", _stream.c_str(),
+                             "routing-key", _routing_key.c_str(), nullptr);
             break;
         default:
             GST_ERROR_OBJECT(_base, "Unknown publish method %d (%s)", _method, method_type_to_string(_method));
@@ -197,6 +234,10 @@ class GvaMetaPublishPrivate {
     std::string _address;
     std::string _mqtt_client_id;
     std::string _topic;
+    std::string _controller_uri;
+    std::string _scope;
+    std::string _stream;
+    std::string _routing_key;
     uint32_t _max_connect_attempts = 0;
     uint32_t _max_reconnect_interval = 0;
     bool _signal_handoffs = false;
@@ -212,6 +253,7 @@ static GType gst_gva_metapublish_method_get_type(void) {
     static const GEnumValue method_types[] = {{GVA_META_PUBLISH_FILE, "File publish", PUBLISH_METHOD_FILE_NAME},
                                               {GVA_META_PUBLISH_MQTT, "MQTT publish", PUBLISH_METHOD_MQTT_NAME},
                                               {GVA_META_PUBLISH_KAFKA, "Kafka publish", PUBLISH_METHOD_KAFKA_NAME},
+                                              {GVA_META_PUBLISH_PRAVEGA, "Pravega publish", PUBLISH_METHOD_PRAVEGA_NAME},
                                               {0, NULL, NULL}};
 
     if (!gva_metapublish_method_type) {
@@ -277,39 +319,76 @@ static void gva_meta_publish_class_init(GvaMetaPublishClass *klass) {
     auto prm_flags = static_cast<GParamFlags>(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT);
     g_object_class_install_property(
         gobject_class, PROP_FILE_PATH,
-        g_param_spec_string("file-path", "FilePath",
-                            "[method= file] Absolute path to output file for publishing inferences.", DEFAULT_FILE_PATH,
-                            prm_flags));
+        g_param_spec_string("file-path",
+                            "FilePath",
+                            "[method= file] Absolute path to output file for publishing inferences.",
+                            DEFAULT_FILE_PATH, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_FILE_FORMAT,
-        g_param_spec_enum("file-format", "File Format", "[method= file] Structure of JSON objects in the file",
-                          GST_TYPE_GVA_METAPUBLISH_FILE_FORMAT, DEFAULT_FILE_FORMAT, prm_flags));
-    g_object_class_install_property(gobject_class, PROP_PUBLISH_METHOD,
-                                    g_param_spec_enum("method", "Publish method", "Publishing method",
-                                                      GST_TYPE_GVA_METAPUBLISH_METHOD, DEFAULT_PUBLISH_METHOD,
-                                                      prm_flags));
+        g_param_spec_enum("file-format",
+                          "File Format", 
+                          "[method= file] Structure of JSON objects in the file",
+                          GST_TYPE_GVA_METAPUBLISH_FILE_FORMAT,
+                          DEFAULT_FILE_FORMAT, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_PUBLISH_METHOD,
+        g_param_spec_enum("method",
+                          "Publish method",
+                          "Publishing method",
+                          GST_TYPE_GVA_METAPUBLISH_METHOD, 
+                          DEFAULT_PUBLISH_METHOD, prm_flags));
 
     g_object_class_install_property(
         gobject_class, PROP_ADDRESS,
-        g_param_spec_string("address", "Address", "[method= kafka | mqtt] Broker address", DEFAULT_ADDRESS, prm_flags));
-    g_object_class_install_property(gobject_class, PROP_MQTTCLIENTID,
-                                    g_param_spec_string("mqtt-client-id", "MQTT Client ID",
-                                                        "[method= mqtt] Unique identifier for the MQTT "
-                                                        "client. If not provided, one will be generated for you.",
-                                                        DEFAULT_MQTTCLIENTID, prm_flags));
-    g_object_class_install_property(gobject_class, PROP_TOPIC,
-                                    g_param_spec_string("topic", "Topic",
-                                                        "[method= kafka | mqtt] Topic on which to send broker messages",
-                                                        DEFAULT_TOPIC, prm_flags));
-    g_object_class_install_property(gobject_class, PROP_MAX_CONNECT_ATTEMPTS,
-                                    g_param_spec_uint("max-connect-attempts", "Max Connect Attempts",
-                                                      "[method= kafka | mqtt] Maximum number of failed connection "
-                                                      "attempts before it is considered fatal.",
-                                                      1, 10, DEFAULT_MAX_CONNECT_ATTEMPTS, prm_flags));
+        g_param_spec_string("address", 
+                            "Address", 
+                            "[method= kafka | mqtt] Broker address",
+                            DEFAULT_ADDRESS, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_MQTTCLIENTID,
+        g_param_spec_string("mqtt-client-id",
+                            "MQTT Client ID",
+                            "[method= mqtt] Unique identifier for the MQTT client. If not provided, one will be generated for you.",
+                            DEFAULT_MQTTCLIENTID, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_TOPIC,
+        g_param_spec_string("topic",
+                            "Topic",
+                            "[method= kafka | mqtt] Topic on which to send broker messages",
+                            DEFAULT_TOPIC, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_MAX_CONNECT_ATTEMPTS,
+        g_param_spec_uint("max-connect-attempts", "Max Connect Attempts",
+                          "[method= kafka | mqtt] Maximum number of failed connection attempts before it is considered fatal.",
+                          1, 10, DEFAULT_MAX_CONNECT_ATTEMPTS, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_MAX_RECONNECT_INTERVAL,
         g_param_spec_uint("max-reconnect-interval", "Max Reconnect Interval",
                           "[method= kafka | mqtt] Maximum time in seconds between reconnection attempts. Initial "
                           "interval is 1 second and will be doubled on each failure up to this maximum interval.",
                           1, 300, DEFAULT_MAX_RECONNECT_INTERVAL, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_CONTROLLER_URI,
+        g_param_spec_string("controller-uri", 
+                            "Pravega Controller Uri", 
+                            "[method= pravega] Controller Uri",
+                            DEFAULT_CONTROLLER_URI, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_SCOPE,
+        g_param_spec_string("scope", 
+                            "Scope", 
+                            "[method= pravega] Scope",
+                            DEFAULT_SCOPE, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_STREAM,
+        g_param_spec_string("stream", 
+                            "Stream", 
+                            "[method= pravega] Stream",
+                            DEFAULT_STREAM, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_ROUTING_KEY,
+        g_param_spec_string("routing-key", 
+                            "Routing Key", 
+                            "[method= pravega] Routing Key",
+                            DEFAULT_ROUTING_KEY, prm_flags));
 }
