@@ -37,6 +37,7 @@ constexpr auto DEFAULT_SIGNAL_HANDOFFS = false;
 constexpr auto DEFAULT_MAX_CONNECT_ATTEMPTS = 1;
 constexpr auto DEFAULT_MAX_RECONNECT_INTERVAL = 30;
 constexpr auto DEFAULT_CONTROLLER_URI = "tcp://127.0.0.1:9090";
+constexpr auto DEFAULT_KEYCLOCK_FILE = "";
 constexpr auto DEFAULT_SCOPE = "";
 constexpr auto DEFAULT_STREAM = "";
 constexpr auto DEFAULT_ROUTING_KEY = "";

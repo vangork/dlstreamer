@@ -28,6 +28,7 @@ GST_DEBUG_CATEGORY_STATIC(gva_meta_publish_pravega_debug_category);
 enum {
     PROP_0,
     PROP_CONTROLLER_URI,
+    PROP_KEYCLOAK_FILE,
     PROP_SCOPE,
     PROP_STREAM,
     PROP_ROUTING_KEY,
@@ -43,10 +44,10 @@ class GvaMetaPublishPravegaPrivate {
 
     gboolean start() {
         GST_INFO_OBJECT(_base,
-                        "Gvametapushlish params: \n--controller-uri: %s\n --scope: %s\n --stream:%s \n --routing-key: %s\n",
-                        _controller_uri.c_str(), _scope.c_str(), _stream.c_str(), _routing_key.c_str());
+                        "Gvametapushlish params: \n--controller-uri: %s\n--keyclock_file: %s\n --scope: %s\n --stream:%s \n --routing-key: %s\n",
+                        _controller_uri.c_str(), _keyclock_file.c_str(), _scope.c_str(), _stream.c_str(), _routing_key.c_str());
 
-        _stream_manager = create_stream_manager(_controller_uri.c_str(), false, false, false);
+        _stream_manager = create_stream_manager(_controller_uri.c_str(), _keyclock_file.c_str(), true, true);
         if (!_stream_manager) {
             GST_ERROR_OBJECT(_base, "Failed to create pravega stream manager.");
             return false;
@@ -116,6 +117,9 @@ class GvaMetaPublishPravegaPrivate {
         case PROP_CONTROLLER_URI:
             _controller_uri = g_value_get_string(value);
             break;
+        case PROP_KEYCLOAK_FILE:
+            _keyclock_file = g_value_get_string(value);
+            break;
         case PROP_SCOPE:
             _scope = g_value_get_string(value);
             break;
@@ -143,6 +147,9 @@ class GvaMetaPublishPravegaPrivate {
         case PROP_CONTROLLER_URI:
             g_value_set_string(value, _controller_uri.c_str());
             break;
+        case PROP_KEYCLOAK_FILE:
+            g_value_set_string(value, _keyclock_file.c_str());
+            break;
         case PROP_SCOPE:
             g_value_set_string(value, _scope.c_str());
             break;
@@ -168,6 +175,7 @@ class GvaMetaPublishPravegaPrivate {
     GvaMetaPublishBase *_base;
 
     std::string _controller_uri;
+    std::string _keyclock_file;
     std::string _scope;
     std::string _stream;
     std::string _routing_key;
@@ -241,6 +249,12 @@ static void gva_meta_publish_pravega_class_init(GvaMetaPublishPravegaClass *klas
                             "Pravega Controller Uri",
                             "Pravega Controller Uri",
                             DEFAULT_CONTROLLER_URI, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_KEYCLOAK_FILE,
+        g_param_spec_string("keyclock-file",
+                            "Keyclock File",
+                            "Keyclock File",
+                            DEFAULT_KEYCLOCK_FILE, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_SCOPE,
         g_param_spec_string("scope",
