@@ -38,6 +38,8 @@ constexpr auto DEFAULT_MAX_CONNECT_ATTEMPTS = 1;
 constexpr auto DEFAULT_MAX_RECONNECT_INTERVAL = 30;
 constexpr auto DEFAULT_CONTROLLER_URI = "tcp://127.0.0.1:9090";
 constexpr auto DEFAULT_KEYCLOCK_FILE = "";
+constexpr auto DEFAULT_AUTH_ENABLED = false;
+constexpr auto DEFAULT_DISABLE_CERT = false;
 constexpr auto DEFAULT_SCOPE = "";
 constexpr auto DEFAULT_STREAM = "";
 constexpr auto DEFAULT_ROUTING_KEY = "";
@@ -46,3 +48,5 @@ GST_EXPORT const gchar *file_format_to_string(FileFormat format);
 
 GST_EXPORT GType gva_metapublish_file_format_get_type(void);
 #define GST_TYPE_GVA_METAPUBLISH_FILE_FORMAT (gva_metapublish_file_format_get_type())
+
+#define BOOL_TO_STR(b) ((b) ? "true" : "false")

@@ -48,6 +48,8 @@ enum {
     PROP_SIGNAL_HANDOFFS,
     PROP_CONTROLLER_URI,
     PROP_KEYCLOAK_FILE,
+    PROP_AUTH_ENABLED,
+    PROP_DISABLE_CERT,
     PROP_SCOPE,
     PROP_STREAM,
     PROP_ROUTING_KEY,
@@ -102,6 +104,12 @@ class GvaMetaPublishPrivate {
         case PROP_KEYCLOAK_FILE:
             _keyclock_file = g_value_get_string(value);
             break;
+        case PROP_AUTH_ENABLED:
+            _auth_enabled = g_value_get_boolean(value);
+            break;
+        case PROP_DISABLE_CERT:
+            _disable_cert = g_value_get_boolean(value);
+            break;
         case PROP_SCOPE:
             _scope = g_value_get_string(value);
             break;
@@ -149,6 +157,12 @@ class GvaMetaPublishPrivate {
         case PROP_KEYCLOAK_FILE:
             g_value_set_string(value, _keyclock_file.c_str());
             break;
+        case PROP_AUTH_ENABLED:
+            g_value_set_boolean(value, _auth_enabled);
+            break;
+        case PROP_DISABLE_CERT:
+            g_value_set_boolean(value, _disable_cert);
+            break;
         case PROP_SCOPE:
             g_value_set_string(value, _scope.c_str());
             break;
@@ -169,12 +183,13 @@ class GvaMetaPublishPrivate {
                         "%s parameters:\n -- Method: %s\n -- File path: %s\n -- File format: %s\n -- Address: %s\n "
                         "-- Mqtt client ID: %s\n -- Kafka topic: %s\n -- Max connect attempts: %d\n "
                         "-- Max reconnect interval: %d\n -- Signal handoffs: %s\n "
-                        "-- Pravega controller Uri: %s\n -- Keyclock file: %s\n -- Scope: %s\n "
-                        "-- Stream:%s \n -- Routing key: %s\n",
+                        "-- Pravega controller Uri: %s\n -- Keyclock file: %s\n -- Auth enabled: %s\n "
+                        "-- Disable cert: %s\n  -- Scope: %s\n -- Stream:%s \n -- Routing key: %s\n",
                         GST_ELEMENT_NAME(GST_ELEMENT_CAST(_base)), method_type_to_string(_method), _file_path.c_str(),
                         file_format_to_string(_file_format), _address.c_str(), _mqtt_client_id.c_str(), _topic.c_str(),
-                        _max_connect_attempts, _max_reconnect_interval, _signal_handoffs ? "true" : "false",
-                        _controller_uri.c_str(), _keyclock_file.c_str(), _scope.c_str(), _stream.c_str(), _routing_key.c_str());
+                        _max_connect_attempts, _max_reconnect_interval, BOOL_TO_STR(_signal_handoffs),
+                        _controller_uri.c_str(), _keyclock_file.c_str(), BOOL_TO_STR(_auth_enabled),
+                        BOOL_TO_STR(_disable_cert), _scope.c_str(), _stream.c_str(), _routing_key.c_str());
 
         switch (_method) {
         case GVA_META_PUBLISH_FILE:
@@ -195,7 +210,8 @@ class GvaMetaPublishPrivate {
         case GVA_META_PUBLISH_PRAVEGA:
             if ((_metapublish = gst_element_factory_make("gvametapublishpravega", nullptr)))
                 g_object_set(_metapublish, "controller-uri", _controller_uri.c_str(), "keyclock_file", _keyclock_file.c_str(),
-                             "scope", _scope.c_str(), "stream", _stream.c_str(), "routing-key", _routing_key.c_str(), nullptr);
+                             "auth_enabled", _auth_enabled, "disable_cert", _disable_cert, "scope", _scope.c_str(),
+                             "stream", _stream.c_str(), "routing-key", _routing_key.c_str(), nullptr);
             break;
         default:
             GST_ERROR_OBJECT(_base, "Unknown publish method %d (%s)", _method, method_type_to_string(_method));
@@ -250,6 +266,8 @@ class GvaMetaPublishPrivate {
     uint32_t _max_connect_attempts = 0;
     uint32_t _max_reconnect_interval = 0;
     bool _signal_handoffs = false;
+    bool _auth_enabled;
+    bool _disable_cert;
 };
 
 G_DEFINE_TYPE_EXTENDED(GvaMetaPublish, gva_meta_publish, GST_TYPE_BIN, 0, G_ADD_PRIVATE(GvaMetaPublish);
@@ -386,8 +404,20 @@ static void gva_meta_publish_class_init(GvaMetaPublishClass *klass) {
         gobject_class, PROP_KEYCLOAK_FILE,
         g_param_spec_string("keyclock-file",
                             "Keyclock File",
-                            "Keyclock File",
+                            "[method= pravega] Keyclock authentication file",
                             DEFAULT_KEYCLOCK_FILE, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_AUTH_ENABLED,
+        g_param_spec_boolean("auth-enabled",
+                            "Auth Enabled",
+                            "[method= pravega] Auth Enabled",
+                            DEFAULT_AUTH_ENABLED, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_DISABLE_CERT,
+        g_param_spec_boolean("disable-cert",
+                            "Disable Cert",
+                            "[method= pravega] Disable cert verification",
+                            DEFAULT_DISABLE_CERT, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_SCOPE,
         g_param_spec_string("scope", 
