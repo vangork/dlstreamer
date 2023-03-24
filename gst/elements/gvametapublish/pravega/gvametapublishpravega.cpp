@@ -28,6 +28,9 @@ GST_DEBUG_CATEGORY_STATIC(gva_meta_publish_pravega_debug_category);
 enum {
     PROP_0,
     PROP_CONTROLLER_URI,
+    PROP_KEYCLOAK_FILE,
+    PROP_AUTH_ENABLED,
+    PROP_DISABLE_CERT,
     PROP_SCOPE,
     PROP_STREAM,
     PROP_ROUTING_KEY,
@@ -43,10 +46,18 @@ class GvaMetaPublishPravegaPrivate {
 
     gboolean start() {
         GST_INFO_OBJECT(_base,
-                        "Gvametapushlish params: \n--controller-uri: %s\n --scope: %s\n --stream:%s \n --routing-key: %s\n",
-                        _controller_uri.c_str(), _scope.c_str(), _stream.c_str(), _routing_key.c_str());
+                        "Gvametapushlish params: \n"
+                        "--controller-uri: %s\n "
+                        "--keyclock-file: %s\n "
+                        "--auth-enabled: %s\n "
+                        "--disable-cert: %s\n "
+                        "--scope: %s\n "
+                        "--stream: %s\n "
+                        "--routing-key: %s\n",
+                        _controller_uri.c_str(), _keyclock_file.c_str(), BOOL_TO_STR(_auth_enabled), BOOL_TO_STR(_disable_cert),
+                        _scope.c_str(), _stream.c_str(), _routing_key.c_str());
 
-        _stream_manager = create_stream_manager(_controller_uri.c_str(), false, false, false);
+        _stream_manager = create_stream_manager_with_keyclock(_controller_uri.c_str(), _keyclock_file.c_str(), _auth_enabled, _disable_cert);
         if (!_stream_manager) {
             GST_ERROR_OBJECT(_base, "Failed to create pravega stream manager.");
             return false;
@@ -116,6 +127,15 @@ class GvaMetaPublishPravegaPrivate {
         case PROP_CONTROLLER_URI:
             _controller_uri = g_value_get_string(value);
             break;
+        case PROP_KEYCLOAK_FILE:
+            _keyclock_file = g_value_get_string(value);
+            break;
+        case PROP_AUTH_ENABLED:
+            _auth_enabled = g_value_get_boolean(value);
+            break;
+        case PROP_DISABLE_CERT:
+            _disable_cert = g_value_get_boolean(value);
+            break;
         case PROP_SCOPE:
             _scope = g_value_get_string(value);
             break;
@@ -143,6 +163,15 @@ class GvaMetaPublishPravegaPrivate {
         case PROP_CONTROLLER_URI:
             g_value_set_string(value, _controller_uri.c_str());
             break;
+        case PROP_KEYCLOAK_FILE:
+            g_value_set_string(value, _keyclock_file.c_str());
+            break;
+        case PROP_AUTH_ENABLED:
+            g_value_set_boolean(value, _auth_enabled);
+            break;
+        case PROP_DISABLE_CERT:
+            g_value_set_boolean(value, _disable_cert);
+            break;
         case PROP_SCOPE:
             g_value_set_string(value, _scope.c_str());
             break;
@@ -168,11 +197,14 @@ class GvaMetaPublishPravegaPrivate {
     GvaMetaPublishBase *_base;
 
     std::string _controller_uri;
+    std::string _keyclock_file;
     std::string _scope;
     std::string _stream;
     std::string _routing_key;
     // uint32_t _max_connect_attempts;
     // uint32_t _max_reconnect_interval;
+    bool _auth_enabled;
+    bool _disable_cert;
 
     StreamManager *_stream_manager;
     StreamWriter  *_stream_writer;
@@ -242,10 +274,28 @@ static void gva_meta_publish_pravega_class_init(GvaMetaPublishPravegaClass *klas
                             "Pravega Controller Uri",
                             DEFAULT_CONTROLLER_URI, prm_flags));
     g_object_class_install_property(
+        gobject_class, PROP_KEYCLOAK_FILE,
+        g_param_spec_string("keyclock-file",
+                            "Keyclock File",
+                            "Keyclock File",
+                            DEFAULT_KEYCLOCK_FILE, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_AUTH_ENABLED,
+        g_param_spec_boolean("auth-enabled",
+                            "Auth Enabled",
+                            "Auth Enabled",
+                            DEFAULT_AUTH_ENABLED, prm_flags));
+    g_object_class_install_property(
+        gobject_class, PROP_DISABLE_CERT,
+        g_param_spec_boolean("disable-cert",
+                            "Disable Cert",
+                            "Disable Cert Verification",
+                            DEFAULT_DISABLE_CERT, prm_flags));
+    g_object_class_install_property(
         gobject_class, PROP_SCOPE,
         g_param_spec_string("scope",
                             "Scope",
-                            "Sciope in which to create pravega stream",
+                            "Scope in which to create pravega stream",
                             DEFAULT_SCOPE, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_STREAM,
