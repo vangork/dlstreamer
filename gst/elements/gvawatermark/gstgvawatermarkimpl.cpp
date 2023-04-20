@@ -450,8 +450,17 @@ bool Impl::render(GstBuffer *buffer) {
         appendStr(ff_text, tensor.label());
     }
 
-    if (ff_text.tellp() != 0)
-        prims.emplace_back(render::Text(ff_text.str(), _ff_text_position, _font.type, _font.scale, _default_color));
+    if (ff_text.tellp() != 0) {
+        std::istringstream ss(ff_text.str());
+        std::string token;
+        const int dy = 40;
+        int y0 = 0;
+        while(std::getline(ss, token, '\n')) {
+            const cv::Point2f text_position = cv::Point2f(_ff_text_position.x, _ff_text_position.y + y0 * dy);
+            prims.emplace_back(render::Text(token, text_position, _font.type, _font.scale, _default_color));
+            y0++;
+        }
+    }
 
     // Skip render if there are no primitives to draw
     if (!prims.empty()) {
