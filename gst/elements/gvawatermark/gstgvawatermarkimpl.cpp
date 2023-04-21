@@ -450,17 +450,8 @@ bool Impl::render(GstBuffer *buffer) {
         appendStr(ff_text, tensor.label());
     }
 
-    if (ff_text.tellp() != 0) {
-        std::istringstream ss(ff_text.str());
-        std::string token;
-        const int dy = 40;
-        int y0 = 0;
-        while(std::getline(ss, token, '\n')) {
-            const cv::Point2f text_position = cv::Point2f(_ff_text_position.x, _ff_text_position.y + y0 * dy);
-            prims.emplace_back(render::Text(token, text_position, _font.type, _font.scale, _default_color));
-            y0++;
-        }
-    }
+    if (ff_text.tellp() != 0)
+        prims.emplace_back(render::Text(ff_text.str(), _ff_text_position, _font.type, _font.scale, _default_color));
 
     // Skip render if there are no primitives to draw
     if (!prims.empty()) {
@@ -546,6 +537,31 @@ void Impl::preparePrimsForTensor(const GVA::Tensor &tensor, GVA::Rect<double> re
                 y2 = safe_convert<int>(rect.y + rect.h * data[1]);
             }
             prims.emplace_back(render::Line(cv::Point2i(x, y), cv::Point2i(x2, y2), _default_color, _thickness));
+        }
+    }
+
+    // crossing line
+    if (tensor.model_name() == "crossing_line") {
+        cv::Scalar color(255, 0, 0);
+        const cv::Point2f p0 = cv::Point2f(tensor.get_double("x0"), tensor.get_double("y0"));
+        const cv::Point2f p1 = cv::Point2f(tensor.get_double("x1"), tensor.get_double("y1"));
+
+        prims.emplace_back(render::Line(p0, p1, color, _thickness));
+        std::string entered = "Entered: ";
+        entered += std::to_string(tensor.get_int("in"));
+        std::string left = "Left: ";
+        left += std::to_string(tensor.get_int("out"));
+        prims.emplace_back(render::Text(entered, cv::Point2f(tensor.get_double("x1") + 10, tensor.get_double("y1") + 10), _font.type, _font.scale, color, 1));
+        prims.emplace_back(render::Text(left, cv::Point2f(tensor.get_double("x0") - 10, tensor.get_double("y0") - 10), _font.type, _font.scale, color, 1));
+
+        std::istringstream ss(tensor.get_string("msg"));
+        std::string token;
+        const int dy = 30;
+        int y0 = 0;
+        while(std::getline(ss, token, '\n')) {
+            const cv::Point2f text_position = cv::Point2f(5, 25.f + y0 * dy);
+            prims.emplace_back(render::Text(token, text_position, _font.type, _font.scale, color, 1));
+            y0++;
         }
     }
 
