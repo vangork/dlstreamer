@@ -565,6 +565,27 @@ void Impl::preparePrimsForTensor(const GVA::Tensor &tensor, GVA::Rect<double> re
         }
     }
 
+    if (tensor.model_name() == "crossing_line_trajectory") {
+        GValueArray *trajectory_x = nullptr;
+        gst_structure_get_array(tensor.gst_structure(), "trajectory_x", &trajectory_x);
+        GValueArray *trajectory_y = nullptr;
+        gst_structure_get_array(tensor.gst_structure(), "trajectory_y", &trajectory_y);
+
+        if (trajectory_x == nullptr || trajectory_y == nullptr || trajectory_x->n_values == 0 || trajectory_y->n_values == 0 || trajectory_x->n_values != trajectory_y->n_values)
+            throw std::runtime_error("Incorrent trajectory data.");
+
+        for (size_t i = 0; i < trajectory_x->n_values - 1; i++) {
+            const gdouble x0 = g_value_get_double(trajectory_x->values + i);
+            const gdouble y0 = g_value_get_double(trajectory_y->values + i);
+            const gdouble x1 = g_value_get_double(trajectory_x->values + i + 1);
+            const gdouble y1 = g_value_get_double(trajectory_y->values + i + 1);
+            prims.emplace_back(render::Line(cv::Point2i(x0, y0), cv::Point2i(x1, y1), indexToColor(tensor.get_int("id")), _thickness));
+        }
+
+        g_value_array_free(trajectory_x);
+        g_value_array_free(trajectory_y);
+    }
+
     preparePrimsForKeypoints(tensor, rect, prims);
 }
 
