@@ -540,9 +540,23 @@ void Impl::preparePrimsForTensor(const GVA::Tensor &tensor, GVA::Rect<double> re
         }
     }
 
+    // queue
+    if (tensor.model_name() == "queue") {
+        Color color = indexToColor(3);
+        std::istringstream ss(tensor.get_string("msg"));
+        std::string token;
+        const int dy = 30;
+        int y0 = 0;
+        while(std::getline(ss, token, '\n')) {
+            const cv::Point2f text_position = cv::Point2f(5, 25.f + y0 * dy);
+            prims.emplace_back(render::Text(token, text_position, _font.type, _font.scale, color, _thickness));
+            y0++;
+        }
+    }
+
     // crossing line
     if (tensor.model_name() == "crossing_line") {
-        cv::Scalar color(255, 0, 0);
+        Color color = indexToColor(1);
         const cv::Point2f p0 = cv::Point2f(tensor.get_double("x0"), tensor.get_double("y0"));
         const cv::Point2f p1 = cv::Point2f(tensor.get_double("x1"), tensor.get_double("y1"));
 
@@ -560,7 +574,7 @@ void Impl::preparePrimsForTensor(const GVA::Tensor &tensor, GVA::Rect<double> re
         int y0 = 0;
         while(std::getline(ss, token, '\n')) {
             const cv::Point2f text_position = cv::Point2f(5, 25.f + y0 * dy);
-            prims.emplace_back(render::Text(token, text_position, _font.type, _font.scale, color, 1));
+            prims.emplace_back(render::Text(token, text_position, _font.type, _font.scale, color, _thickness));
             y0++;
         }
     }
@@ -579,7 +593,7 @@ void Impl::preparePrimsForTensor(const GVA::Tensor &tensor, GVA::Rect<double> re
             const gdouble y0 = g_value_get_double(trajectory_y->values + i);
             const gdouble x1 = g_value_get_double(trajectory_x->values + i + 1);
             const gdouble y1 = g_value_get_double(trajectory_y->values + i + 1);
-            prims.emplace_back(render::Line(cv::Point2i(x0, y0), cv::Point2i(x1, y1), indexToColor(tensor.get_int("id")), _thickness));
+            prims.emplace_back(render::Line(cv::Point2i(x0, y0), cv::Point2i(x1, y1), indexToColor(tensor.get_int("id")), 1));
         }
 
         g_value_array_free(trajectory_x);
