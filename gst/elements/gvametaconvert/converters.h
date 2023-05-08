@@ -12,6 +12,7 @@
 
 #include "gstgvametaconvert.h"
 #include "jsonconverter.h"
+#include "onvifconverter.h"
 
 #ifdef __cplusplus
 extern "C" {

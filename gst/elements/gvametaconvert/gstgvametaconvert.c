@@ -59,6 +59,7 @@ static guint gst_interpret_signals[LAST_SIGNAL] = {0};
 #define UNKNOWN_VALUE_NAME "unknown"
 
 #define FORMAT_JSON_NAME "json"
+#define FORMAT_ONVIF_JSON_NAME "onvif-json"
 #define FORMAT_DUMP_DETECTION_NAME "dump-detection"
 
 enum {
@@ -76,6 +77,8 @@ static const gchar *format_type_to_string(GstGVAMetaconvertFormatType format) {
     switch (format) {
     case GST_GVA_METACONVERT_JSON:
         return FORMAT_JSON_NAME;
+    case GST_GVA_METACONVERT_ONVIF_JSON:
+        return FORMAT_ONVIF_JSON_NAME;
     case GST_GVA_METACONVERT_DUMP_DETECTION:
         return FORMAT_DUMP_DETECTION_NAME;
     default:
@@ -93,6 +96,7 @@ GType gst_gva_metaconvert_get_format(void) {
     static GType gva_metaconvert_format_type = 0;
     static const GEnumValue format_types[] = {
         {GST_GVA_METACONVERT_JSON, "Conversion to GstGVAJSONMeta", FORMAT_JSON_NAME},
+        {GST_GVA_METACONVERT_ONVIF_JSON, "Conversion to GstGVAJSONMeta with ONVIF format", FORMAT_ONVIF_JSON_NAME},
         {GST_GVA_METACONVERT_DUMP_DETECTION, "Dump detection to GST debug log", FORMAT_DUMP_DETECTION_NAME},
         {0, NULL, NULL}};
 

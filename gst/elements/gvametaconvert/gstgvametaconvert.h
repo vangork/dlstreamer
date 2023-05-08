@@ -31,6 +31,7 @@ typedef gboolean (*convert_function_type)(GstGvaMetaConvert *converter, GstBuffe
 
 typedef enum {
     GST_GVA_METACONVERT_JSON,
+    GST_GVA_METACONVERT_ONVIF_JSON,
     GST_GVA_METACONVERT_DUMP_DETECTION,
 } GstGVAMetaconvertFormatType;
 

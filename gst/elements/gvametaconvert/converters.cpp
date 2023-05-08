@@ -54,6 +54,7 @@ GHashTable *get_converters() {
     GHashTable *converters = g_hash_table_new(g_direct_hash, g_direct_equal);
 
     g_hash_table_insert(converters, GINT_TO_POINTER(GST_GVA_METACONVERT_JSON), (gpointer)to_json);
+    g_hash_table_insert(converters, GINT_TO_POINTER(GST_GVA_METACONVERT_ONVIF_JSON), (gpointer)to_onvif_json);
     g_hash_table_insert(converters, GINT_TO_POINTER(GST_GVA_METACONVERT_DUMP_DETECTION), (gpointer)dump_detection);
 
     return converters;
