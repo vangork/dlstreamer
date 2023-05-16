@@ -1,0 +1,93 @@
+{
+    "Frame": [{
+      "@UtcTime": "2021-10-05T15:13:27.321",
+      "@Source": "MyClassifier",
+      "@context": {
+          "acme": "http://www.acme.com/schema"
+      },
+      "Transformation": {
+        "Translate": {
+          "@x": -1.0, "@y": -1.0
+        },
+        "Scale": {
+          "@x": 0.003125, "@y": 0.00416667
+        }
+      },
+      "Object": [{
+        "@ObjectId": 15,
+        "Appearance": {
+          "Shape": {
+            "BoundingBox": {
+              "@left": 20.0, "@top": 20.0, "@right": 100.0, "@bottom": 30.0
+            },
+            "CenterOfGravity": {
+              "@x": 60.0, "@y": 50.0
+            },
+            "Polygon": [{
+              "@x": 20.0, "@y": 30.0
+            }, {
+              "@x": 100.0, "@y": 30.0
+            }, {
+              "@x": 100.0, "@y": 80.0
+            }, {
+              "@x": 20.0, "@y": 80.0
+            }]
+          },
+          "Color": {
+            "ColorCluster": [{
+              "Color": {
+                "@X": 213, "@Y": 135, "@Z": 126
+              },
+              "Weight": 0.9,
+              "acme:ColorName": "White"
+            }, {
+              "Color": {
+                "@X": 102, "@Y": 176, "@Z": 119
+              },
+              "Weight": 0.5,
+              "acme:ColorName": "Blue"
+            }]
+          },
+          "Class": {
+            "Type": [{
+              "@Likelihood": 0.8,
+              "#text": "Human"
+            },
+            {
+              "@Likelihood": 0.2,
+              "#text": "Dog"
+            }]
+          },
+          "HumanFace": {
+            "Gender:": "Male",
+            "Age": {
+              "@Min": 20, "@Max": 30
+            },
+            "Accessory": {
+              "Opticals": {
+                "Wear": true
+              },
+              "Hat": {
+                "Wear": true
+              }
+            }
+          },
+          "HumanBody": {
+            "Clothing": {
+              "Tops": {
+                "Category": "LongSleeve"
+              },
+              "Bottoms": {
+                "Category": "Shorts"
+              }
+            },
+            "Belonging": {
+              "Bag": {
+                "Category": "Backpack"
+              }
+            }
+          }
+        }
+      }]
+    }]
+  }

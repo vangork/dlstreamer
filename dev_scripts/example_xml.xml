@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt:MetadataStream xmlns:tt="http://www.onvif.org/ver10/schema"
+xmlns:fc="http://www.onvif.org/ver20/analytics/humanface"
+xmlns:bd="http://www.onvif.org/ver20/analytics/humanbody"
+xmlns:acme="http://www.acme.com/schema">
+  <tt:VideoAnalytics>
+    <tt:Frame UtcTime="2021-10-05T15:13:27.321" Source="MyClassifier">
+      <tt:Transformation>
+        <tt:Translate x="-1.0" y="-1.0"/>
+        <tt:Scale x="0.003125" y="0.00416667"/>
+      </tt:Transformation>
+      <tt:Object ObjectId="15">
+        <tt:Appearance>
+          <tt:Shape>
+            <tt:BoundingBox left="20.0" top="80.0" right="100.0" bottom="30.0"/>
+            <tt:CenterOfGravity x="60.0" y="50.0"/>
+            <tt:Polygon>
+              <tt:Point x="20.0" y="30.0"/>
+              <tt:Point x="100.0" y="30.0"/>
+              <tt:Point x="100.0" y="80.0"/>
+              <tt:Point x="20.0" y="80.0"/>
+            </tt:Polygon>
+          </tt:Shape>
+          <tt:Color>
+            <tt:ColorCluster>
+              <tt:Color X="213" Y="135" Z="126" />
+              <tt:Weight>0.9</tt:Weight>
+              <acme:ColorName>White</acme:ColorName>
+            </tt:ColorCluster>
+            <tt:ColorCluster>
+              <tt:Color X="102" Y="176" Z="119" />
+              <tt:Weight>0.5</tt:Weight>
+              <acme:ColorName>Blue</acme:ColorName>
+            </tt:ColorCluster>
+          </tt:Color>
+          <tt:Class>
+            <tt:Type Likelihood="0.8">Human</tt:Type>
+          </tt:Class>
+          <tt:HumanFace>
+            <fc:Gender>Male</fc:Gender>
+            <fc:Age>
+              <tt:Min>20</tt:Min>
+              <tt:Max>30</tt:Max>
+            </fc:Age>
+            <fc:Accessory>
+              <fc:Opticals>
+                <fc:Wear>True</fc:Wear>
+              </fc:Opticals>
+              <fc:Hat>
+                <fc:Wear>True</fc:Wear>
+              </fc:Hat>
+            </fc:Accessory>
+          </tt:HumanFace>
+          <tt:HumanBody>
+            <bd:Clothing>
+              <bd:Tops>
+                <bd:Category>LongSleeve</bd:Category>
+              </bd:Tops>
+              <bd:Bottoms>
+                <bd:Category>Shorts</bd:Category>
+              </bd:Bottoms>
+            </bd:Clothing>
+            <bd:Belonging>
+              <bd:Bag>
+                <bd:Category>Backpack</bd:Category>
+              </bd:Bag>
+            </bd:Belonging>
+          </tt:HumanBody>
+        </tt:Appearance>
+      </tt:Object>
+    </tt:Frame>
+  </tt:VideoAnalytics>
+</tt:MetadataStream>

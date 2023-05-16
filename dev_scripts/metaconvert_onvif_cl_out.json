@@ -1,0 +1,47 @@
+Rule: [
+    {"line"
+    Count: 5}
+]
+Frame: [{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":0},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":41666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":83333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":125000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":166666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":208333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":250000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":291666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":333333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":375000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":416666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":458333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":500000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":541666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":583333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":625000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":666666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":708333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":750000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":791666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":833333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":875000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":916666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":958333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1000000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1041666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1083333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1125000000},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1166666666},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1208333333},
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1250000000}
+{"objects":[{"h":720,"w":1280,"x":0,"y":0}],"resolution":{"height":720,"width":1280},"timestamp":1250000000}
+]
+
+Rule: []
+Frame:[
+{}
+{}
+{}
+]
+,
+Rule: []
+Frame:
