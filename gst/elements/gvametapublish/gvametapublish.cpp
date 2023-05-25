@@ -102,7 +102,7 @@ class GvaMetaPublishPrivate {
             _controller_uri = g_value_get_string(value);
             break;
         case PROP_KEYCLOAK_FILE:
-            _keyclock_file = g_value_get_string(value);
+            _keycloak_file = g_value_get_string(value);
             break;
         case PROP_AUTH_ENABLED:
             _auth_enabled = g_value_get_boolean(value);
@@ -155,7 +155,7 @@ class GvaMetaPublishPrivate {
             g_value_set_string(value, _controller_uri.c_str());
             break;
         case PROP_KEYCLOAK_FILE:
-            g_value_set_string(value, _keyclock_file.c_str());
+            g_value_set_string(value, _keycloak_file.c_str());
             break;
         case PROP_AUTH_ENABLED:
             g_value_set_boolean(value, _auth_enabled);
@@ -183,12 +183,12 @@ class GvaMetaPublishPrivate {
                         "%s parameters:\n -- Method: %s\n -- File path: %s\n -- File format: %s\n -- Address: %s\n "
                         "-- Mqtt client ID: %s\n -- Kafka topic: %s\n -- Max connect attempts: %d\n "
                         "-- Max reconnect interval: %d\n -- Signal handoffs: %s\n "
-                        "-- Pravega controller Uri: %s\n -- Keyclock file: %s\n -- Auth enabled: %s\n "
+                        "-- Pravega controller Uri: %s\n -- Keycloak file: %s\n -- Auth enabled: %s\n "
                         "-- Disable cert: %s\n  -- Scope: %s\n -- Stream:%s \n -- Routing key: %s\n",
                         GST_ELEMENT_NAME(GST_ELEMENT_CAST(_base)), method_type_to_string(_method), _file_path.c_str(),
                         file_format_to_string(_file_format), _address.c_str(), _mqtt_client_id.c_str(), _topic.c_str(),
                         _max_connect_attempts, _max_reconnect_interval, BOOL_TO_STR(_signal_handoffs),
-                        _controller_uri.c_str(), _keyclock_file.c_str(), BOOL_TO_STR(_auth_enabled),
+                        _controller_uri.c_str(), _keycloak_file.c_str(), BOOL_TO_STR(_auth_enabled),
                         BOOL_TO_STR(_disable_cert), _scope.c_str(), _stream.c_str(), _routing_key.c_str());
 
         switch (_method) {
@@ -209,7 +209,7 @@ class GvaMetaPublishPrivate {
             break;
         case GVA_META_PUBLISH_PRAVEGA:
             if ((_metapublish = gst_element_factory_make("gvametapublishpravega", nullptr)))
-                g_object_set(_metapublish, "controller-uri", _controller_uri.c_str(), "keyclock_file", _keyclock_file.c_str(),
+                g_object_set(_metapublish, "controller-uri", _controller_uri.c_str(), "keycloak_file", _keycloak_file.c_str(),
                              "auth_enabled", _auth_enabled, "disable_cert", _disable_cert, "scope", _scope.c_str(),
                              "stream", _stream.c_str(), "routing-key", _routing_key.c_str(), nullptr);
             break;
@@ -259,7 +259,7 @@ class GvaMetaPublishPrivate {
     std::string _mqtt_client_id;
     std::string _topic;
     std::string _controller_uri;
-    std::string _keyclock_file;
+    std::string _keycloak_file;
     std::string _scope;
     std::string _stream;
     std::string _routing_key;
@@ -402,10 +402,10 @@ static void gva_meta_publish_class_init(GvaMetaPublishClass *klass) {
                             DEFAULT_CONTROLLER_URI, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_KEYCLOAK_FILE,
-        g_param_spec_string("keyclock-file",
-                            "Keyclock File",
-                            "[method= pravega] Keyclock authentication file",
-                            DEFAULT_KEYCLOCK_FILE, prm_flags));
+        g_param_spec_string("keycloak-file",
+                            "Keycloak File",
+                            "[method= pravega] Keycloak authentication file",
+                            DEFAULT_KEYCLOAK_FILE, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_AUTH_ENABLED,
         g_param_spec_boolean("auth-enabled",

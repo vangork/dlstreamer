@@ -48,16 +48,16 @@ class GvaMetaPublishPravegaPrivate {
         GST_INFO_OBJECT(_base,
                         "Gvametapushlish params: \n"
                         "--controller-uri: %s\n "
-                        "--keyclock-file: %s\n "
+                        "--keycloak-file: %s\n "
                         "--auth-enabled: %s\n "
                         "--disable-cert: %s\n "
                         "--scope: %s\n "
                         "--stream: %s\n "
                         "--routing-key: %s\n",
-                        _controller_uri.c_str(), _keyclock_file.c_str(), BOOL_TO_STR(_auth_enabled), BOOL_TO_STR(_disable_cert),
+                        _controller_uri.c_str(), _keycloak_file.c_str(), BOOL_TO_STR(_auth_enabled), BOOL_TO_STR(_disable_cert),
                         _scope.c_str(), _stream.c_str(), _routing_key.c_str());
 
-        _stream_manager = create_stream_manager_with_keyclock(_controller_uri.c_str(), _keyclock_file.c_str(), _auth_enabled, _disable_cert);
+        _stream_manager = create_stream_manager_with_keycloak(_controller_uri.c_str(), _keycloak_file.c_str(), _auth_enabled, _disable_cert);
         if (!_stream_manager) {
             GST_ERROR_OBJECT(_base, "Failed to create pravega stream manager.");
             return false;
@@ -128,7 +128,7 @@ class GvaMetaPublishPravegaPrivate {
             _controller_uri = g_value_get_string(value);
             break;
         case PROP_KEYCLOAK_FILE:
-            _keyclock_file = g_value_get_string(value);
+            _keycloak_file = g_value_get_string(value);
             break;
         case PROP_AUTH_ENABLED:
             _auth_enabled = g_value_get_boolean(value);
@@ -164,7 +164,7 @@ class GvaMetaPublishPravegaPrivate {
             g_value_set_string(value, _controller_uri.c_str());
             break;
         case PROP_KEYCLOAK_FILE:
-            g_value_set_string(value, _keyclock_file.c_str());
+            g_value_set_string(value, _keycloak_file.c_str());
             break;
         case PROP_AUTH_ENABLED:
             g_value_set_boolean(value, _auth_enabled);
@@ -197,7 +197,7 @@ class GvaMetaPublishPravegaPrivate {
     GvaMetaPublishBase *_base;
 
     std::string _controller_uri;
-    std::string _keyclock_file;
+    std::string _keycloak_file;
     std::string _scope;
     std::string _stream;
     std::string _routing_key;
@@ -275,10 +275,10 @@ static void gva_meta_publish_pravega_class_init(GvaMetaPublishPravegaClass *klas
                             DEFAULT_CONTROLLER_URI, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_KEYCLOAK_FILE,
-        g_param_spec_string("keyclock-file",
-                            "Keyclock File",
-                            "Keyclock File",
-                            DEFAULT_KEYCLOCK_FILE, prm_flags));
+        g_param_spec_string("keycloak-file",
+                            "Keycloak File",
+                            "Keycloak File",
+                            DEFAULT_KEYCLOAK_FILE, prm_flags));
     g_object_class_install_property(
         gobject_class, PROP_AUTH_ENABLED,
         g_param_spec_boolean("auth-enabled",
